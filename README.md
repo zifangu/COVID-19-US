@@ -2,7 +2,7 @@
 
 This project is a collaboration between my two teammates. We implemented this in AWS therefore it cannot be run directly by cloning this repo. It is meant to be used as a demonstration of skills or knowledge on normalizing database, Flask, and AJAX.
 
-The Database is 3NF created using raw data from Johns Hopkins Wighting School of Engeering Github repo: https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_daily_reports
+The Database is 3NF created using raw data from Johns Hopkins Wighting School of Engeering Github repo: https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_daily_reports. Using CronTab, our database is set to automatically update at 5 am ET. 
 
 The numbers in that repo are cumulative. In our database, we modified the data to contain the true daily counts, not the cumulative counts.
 
