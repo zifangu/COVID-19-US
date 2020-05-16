@@ -2,7 +2,7 @@
 
 This project is a collaboration between my two teammates. We implemented this in AWS therefore it cannot be run directly by cloning this repo. It is meant to be used as a demonstration of skills or knowledge on normalizing database, Flask, and AJAX.
 
-The Database is 3NF created using raw data from Johns Hopkins Wighting School of Engeering Github repo: https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_daily_reports. Using CronTab, our database is set to automatically update at 5 am ET. 
+The Database is 3NF created using raw data from Johns Hopkins Wighting School of Engeering Github repo. Using CronTab, our database is set to automatically update at 5 am ET. 
 
 The numbers in that repo are cumulative. In our database, we modified the data to contain the true daily counts, not the cumulative counts.
 
@@ -15,3 +15,9 @@ March 22, 2020, to the present, along with a horizontal line marking the total n
 hospital beds in that FIPS code.
 
 The reason we chose March 22, 2020 as our starting date is based on consisent formating in the daily report files and significance of case numbers. 
+
+Hospitals.csv resource: https://hifld-geoplatform.opendata.arcgis.com/datasets/hospitals
+
+JHU CSSE repo: https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_daily_reports
+
+
