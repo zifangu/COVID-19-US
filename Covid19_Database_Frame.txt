@@ -1,0 +1,15 @@
+CREATE TABLE Hospitals (ObjectID int(255) NOT NULL AUTO_INCREMENT, Name varchar(255), Type varchar(255), LocationID int(255), NAICS_CODE varchar(255), Beds int(255), Trauma varchar(255), 
+Helipad varchar(255), StateID varchar(255), PRIMARY KEY (ObjectID), FOREIGN KEY (LocationID) REFERENCES Location(LocationID), FOREIGN KEY (NAICS_Code) REFERENCES NAICS (NAICS_Code);
+
+CREATE TABLE Location (LocationID int(255) NOT NULL AUTO_INCREMENT, Address varchar(255), City varchar(255), CountyFIPS int(255), StateFIPS int(255), Country varchar(255), ZIP int(255), 
+ZIP4 varchar(255) PRIMARY KEY (LocationID), FOREIGN KEY (CountyFIPS) REFERENCES DailyReport(CountyFIPS), FOREIGN KEY (StateFIPS) REFERENCES StateDetails(StateFIPS));
+
+CREATE TABLE NAICS (NAICS_Code int(255), NAICS_Desc varchar(255), PRIMARY KEY (NAICS_Code));
+
+CREATE TABLE StateDetails (StateFIPS int(255), State varchar(255), PRIMARY KEY (StateFIPS));
+
+CREATE TABLE CountyDetails (CountyFIPS int(255), County varchar(255), PRIMARY KEY (CountyFIPS));
+å
+CREATE TABLE DailyReport (DayID int NOT NULL AUTO_INCREMENT,  CountyFIPS int(255), City varchar(255), State varchar(255), 
+Date Date, Confirmed int(255), Deaths int(255), Recovered int(255), Active int(255), PRIMARY KEY (DayID), FOREIGN KEY (CountyFIPS) REFERENCES CountyDetails(CountyFIPS));
+
