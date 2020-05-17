@@ -14,7 +14,7 @@ second is a line chart that shows the historical active cases in that FIPS code 
 March 22, 2020, to the present, along with a horizontal line marking the total number of open
 hospital beds in that FIPS code.
 
-The reason we chose March 22, 2020 as our starting date is based on consisent formating in the daily report files and significance of case numbers. 
+We chose March 22, 2020 as our starting date is for its consisent formating in the daily report files and significance of case numbers. 
 
 Hospitals.csv resource: https://hifld-geoplatform.opendata.arcgis.com/datasets/hospitals
 
