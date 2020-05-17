@@ -1,7 +1,5 @@
 import csv
-import git
 import mysql.connector
-import decimal
 import datetime
 import json
 from datetime import timedelta
@@ -11,7 +9,13 @@ import os
 from pytz import timezone
 
     
-def ajax_is_the_worst():
+def daily_report_initialize():
+    """
+    Function call to initialize "DailyReport" table in the "covid19" database
+    :return: None.
+    """
+
+    # connects to the database on AWS
     mydb = mysql.connector.connect(
         host="localhost",
         user="ivan",
@@ -19,24 +23,30 @@ def ajax_is_the_worst():
         database="covid19"
     )
     mycursor = mydb.cursor(prepared=True)
+
+    # empty dictionary used to store previous active, confirmed, recovered, and deaths
     pact = {}
     pcon = {}
     prec = {}
     pdth = {}
     datapath = '/home/ubuntu/environment/project/covid_data/COVID-19/csse_covid_19_data/csse_covid_19_daily_reports'
     filez = 0
-    d2 = datetime.date(2020, 3, 22)
+
+    # March 22, 2020 is the initial date by group choice
+    d1 = datetime.date(2020, 3, 22)
     
     for file in sorted(os.listdir(datapath)):
-        filez += 1
-        print(file)
-        if filez > 61 and file[-4:] == ".csv":
+
+        # after sorting the directory, the 61st file with .csv extension is 03-22-2020.csv
+        if filez > 60 and file[-4:] == ".csv":
             csvfile = os.path.join(datapath, file)
             with open(csvfile) as hfile:
                 reader = csv.DictReader(hfile)
                 counter = 0
                 for row in reader:
-                    fips = row['FIPS']
+                    fips = row['FIPS'] # read in FIPS from file
+
+                    # if dictionary is empty, set previous values to 0. Else, load the stored value
                     try:         
                         act = pact[fips]
                         con = pcon[fips]
@@ -47,34 +57,51 @@ def ajax_is_the_worst():
                         con = 0
                         rec = 0
                         dth = 0
-                #     #print('post except')
-                #       #print(act)
+
+                    # read the daily cumulative count from file
                     deaths = row['Deaths']
                     confirmed = row['Confirmed']
                     recovered = row['Recovered']
                     active = row['Active']
+
+                    # adjust to record true daily counts
                     daily_deaths = int(deaths) - dth
                     daily_confirmed = int(confirmed) - con
                     daily_recovered = int(recovered) - rec
                     daily_active = int(active) - act
+
+                    # mysql statement to insert records into table "DailyReport"
                     sql = "INSERT INTO DailyReport (CountyFIPS, City, State, " \
                           "Date, Confirmed, Deaths, Recovered, Active) " \
                           "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                    if counter < 5 and filez == 62:
-                        print(sql%(row['FIPS'], row['Admin2'], row['Province_State'], d2.strftime('%Y-%m-%d'), daily_confirmed, daily_deaths, daily_recovered, daily_active))
+
+                    # For this database we are only handling continental US.
+                    # If no FIPS is recorded, the row represents either international or territories, skips that row.
                     try:
                         if row['FIPS'] == "":
                             continue
-                        mycursor.execute(sql,(row['FIPS'], row['Admin2'], row['Province_State'], d2.strftime('%Y-%m-%d'), daily_confirmed, daily_deaths, daily_recovered, daily_active))
+
+                        # execute the sql statement
+                        mycursor.execute(sql, (row['FIPS'], row['Admin2'], row['Province_State'], d1.strftime('%Y-%m-%d'), daily_confirmed, daily_deaths, daily_recovered, daily_active))
+
+                    # if duplicate key, pass
                     except mysql.connector.IntegrityError as err:
-                        pass  
+                        pass
+
+                    # replace the previous daily count dictionary with today's value
                     pact[fips] = int(active)
                     pcon[fips] = int(confirmed)
                     prec[fips] = int(recovered)
                     pdth[fips] = int(deaths)
                     counter += 1
-            d2 += timedelta(days = 1)
 
-                
+            # read in the next day file.
+            d1 += timedelta(days=1)
+        filez += 1
+
+    # commit the database change
     mydb.commit()
+
+def daily_report_update():
+    return 0
 
