@@ -1,6 +1,6 @@
 # COVID-19-US
 
-This project is a collaboration between my two teammates. We implemented this in AWS therefore it cannot be run directly by cloning this repo. It is meant to be used as a demonstration of skills or knowledge on normalizing database, Flask, and AJAX.
+This project is a collaboration between my two teammates. We implemented this in AWS environment therefore it cannot be run directly by cloning this repo. It is meant to be used as a demonstration of skills or knowledge on normalizing database, Flask, and AJAX.
 
 The Database is 3NF created using raw data from Johns Hopkins Wighting School of Engeering Github repo. Using CronTab, our database is set to automatically update at 5 am ET. 
 
