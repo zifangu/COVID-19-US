@@ -2,7 +2,7 @@ import mysql.connector
 from FlaskApp import app
 from FlaskApp import paths
 from markupsafe import escape
-from flask import render_template
+from flask_call import render_template
 
 
 
