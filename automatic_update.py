@@ -16,9 +16,4 @@ def update():
     cron.write()
 
 
-# pull from Github to update local directory
-repo = git.Repo('/home/ubuntu/environment/project/covid_data/COVID-19')
-o = repo.remotes.origin
-o.pull()
-
 update()

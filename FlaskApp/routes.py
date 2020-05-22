@@ -26,53 +26,53 @@ def ajax():
 
 @app.route('/covid19/deaths/cumulative')
 def cumulative():
-   return paths.fun_1()
+   return paths.death_cumulative()
 @app.route('/covid19/deaths/cumulative/<int:date>')
 def cumulativedate(date):
-    return paths.fun_2(date)
+    return paths.death_cumulative_date(date)
 
 @app.route('/covid19/deaths/<int:date>')
 def death_date(date):
-    return paths.fun_3(date)
+    return paths.deaths_single_day(date)
 
 @app.route('/covid19/deaths/<state>/cumulative')
 def state_cumulative(state):
-    return paths.fun_4(state)
+    return paths.deaths_cumulative_state(state)
 
 @app.route('/covid19/deaths/<state>/cumulative/<int:date>')
 def state_cumulative_date(state, date):
-    return paths.fun_5(state, date)
+    return paths.deaths_cumulative_state_date(state, date)
 
 @app.route('/covid19/deaths/<state>/<int:date>')
 def death_state_date(state, date):
-    return paths.fun_6(state, date)
+    return paths.deaths_single_day_state_date(state, date)
    
    
 #***************************************Daddy************************************
 
 @app.route('/covid19/hospitals/<state>')
 def Open_Hospitals(state):
-    return paths.fun_13(state)
+    return paths.hospitals_open(state)
     
 @app.route('/covid19/hospitals/<int:fips>')
 def FIPS_Open_Hospitals(fips):
-    return paths.fun_14(fips)
+    return paths.hospitals_open_fips(fips)
 
 @app.route('/covid19/beds/<state>')
 def Open_Beds(state):
-    return paths.fun_15(state)
+    return paths.beds_open_state(state)
     
 @app.route('/covid19/beds/<int:fips>')
 def FIPS_Open_Beds(fips):
-    return paths.fun_16(fips)
+    return paths.beds_open_fips(fips)
     
 @app.route('/covid19/capacity/<state>')
 def State_Capacity(state):
-    return paths.fun_17(state)
+    return paths.capacity_state(state)
     
 @app.route('/covid19/capacity/<int:fips>')
 def FIPS_Capacity(fips):
-    return paths.fun_18(fips)
+    return paths.capacity_fips(fips)
     
     
     

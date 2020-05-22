@@ -96,7 +96,7 @@ def location():
             # sql insertion command
             sql = "INSERT INTO Location (Address, City, CountyFIPS, ST_FIPS, Country, ZIP, ZIP4) VALUES (%s, %s, %s, %s, %s, %s, %s)"
 
-            # For this database we are only handling continental US data.
+            # For this database we are only handling US data (continental, territories, and Grand Princess)
             if row['COUNTYFIPS'] == 'NOT AVAILABLE':
                 continue
             else:
@@ -128,7 +128,7 @@ def hospitals():
             sql = "INSERT INTO Hospitals (Name, Type, NAICS_CODE, Beds, Trauma, Helipad, StateID) " \
                   "VALUES (%s, %s, %s, %s, %s, %s, %s)"
 
-            # skipping data outside of continental US
+            # skipping data outside of US
             if row['ST_FIPS'] == 'NOT AVAILABLE':
                 continue
             else:
