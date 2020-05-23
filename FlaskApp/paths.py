@@ -1,11 +1,16 @@
+"""
+Author: Scott, Chase and Ivan Gu.
+Comments added by Ivan Gu.
+"""
+
 import mysql.connector
 import decimal
 import datetime
 import json
 from datetime import timedelta
 from datetime import date
-# from datetime import datetime
 from pytz import timezone
+
 
 # dictionary to convert state abbreviation to full name
 states = {'AK': 'Alaska', 'AL': 'Alabama', 'AR': 'Arkansas', 'AS': 'American Samoa', 'AZ': 'Arizona', 'CA': 'California',
@@ -31,7 +36,7 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 
-# 	********************CHASE茶斯**********************
+# 	********************CHASE**********************
 
 def death_cumulative():
     """
@@ -318,7 +323,7 @@ beds, as a JSON dictionary with the single key "capacity"
 
 
 
-#   *********************Ivan子凡**************************
+#   *********************Ivan**************************
 
 """
 7. [baseurl]/covid19/deaths/<state>: returns a JSON dictionary (key is the date in
@@ -335,180 +340,174 @@ state on the present date as a JSON dictionary with the single key "active"
 given state on the given date as a JSON dictionary with the single key "active"
 """
 
-def fun_7(state):
-    sql = "select Date, sum(Deaths) from DailyReport where State = '%s' and Date = '%s'" 
+
+def deaths_continuous_state(state):
+    """
+    :param state: a US state (full name), territories, or Grand Princess
+    :return:  a JSON dictionary (key is the date in MMDDYYYY format) of deaths each day for the given state
+    """
+
+    # sql statement
+    sql = "select Date, sum(Deaths) from DailyReport where State = '%s' and Date = '%s'"
+
+    # initial date of interest
     d1 = datetime.date(2020, 3, 22)
+
+    # set to Eastern time (timezone of Wofford College)
     today = datetime.datetime.now(timezone('US/Eastern'))
-    # today = date.today() - timedelta(days=1)
-    print(today)
-    
+
+    # fetch the result from 03-22-2020 to present
     result = []
-    while (today.date() > d1):
-        # date_para = d1.strftime('%m-%d-%Y')
-        # print(sql % (state, d1))
-        d1_str = d1.strftime('%Y-%m-%d')
-        # print(sql % (state, d1))
+    while today.date() > d1:
         mycursor.execute(sql % (state, d1))
         temp = mycursor.fetchall()
         for row in temp:
-          result.append(row)
-        # result.append(mycursor.fetchall)
-        # print(results)
+            result.append(row)
         d1 += timedelta(days=1)
-    
+
+    # creates JSON dictionary with multi-keys: dates in MMDDYYY format; value: true daily deaths counts
     json_dict = {}
     for i in result:
-      # print(i[1])
-      json_dict[i[0].strftime('%m-%d-%Y')] = int(i[1])
-    # print(json_dict)
+        json_dict[i[0].strftime('%m-%d-%Y')] = int(i[1])
     return json.dumps(json_dict)
-    
-def fun_8(fips, date):
-  sql = "select sum(Deaths) from DailyReport where CountyFIPS = '%s' and Date = '%s'"
-  print(sql % (fips, date))
-  mycursor.execute(sql % (fips, date))
-  json_dict = {}
-  for i in mycursor.fetchall():
-    json_dict['deaths'] = int(i[0])
-  return json.dumps(json_dict)
+
+
+def deaths_single_day_fips(fips, date):
+    """
+    :param fips: a five-digit Federal Information Processing Standards code
+    which uniquely identified counties in the United States
+    :param date: formatted YYYYMMDD
+    :return: the number of deaths in the FIPS code
+on the given date as a JSON dictionary with the single key "deaths"
+    """
+
+    # sql command
+    sql = "select sum(Deaths) from DailyReport where CountyFIPS = '%s' and Date = '%s'"
+    mycursor.execute(sql % (fips, date))
+    json_dict = {}
+
+    # creates JSON dictionary with the single key "deaths"
+    for i in mycursor.fetchall():
+        json_dict['deaths'] = int(i[0])
+    return json.dumps(json_dict)
+
+
+def active_cumualtive():
+    """
+    :return: the total number of active cases in the U.S. on the
+present date as a JSON dictionary with the single key "active"
+    """
+
+    # sql query statement
+    mycursor.execute("select sum(Active) from DailyReport")
+
+    # creates JSON dictionary with the single key "active"
+    result = mycursor.fetchall()
+    json_dict = {}
+    json_dict["active"] = int(result[0][0])
+    return json.dumps(json_dict)
+
   
-def fun_9():
-  today = datetime.datetime.now(timezone('US/Eastern')).date() - timedelta(days=1)
+def active_cumulative_date(date):
+    """
+    :param date: formatted YYYYMMDD
+    :return: the total number of active cases in the U.S. on
+the given date as a JSON dictionary with the single key "active"
+    """
+
+    # sql query statement
+    sql = "select sum(Active) from DailyReport where Date <= '%s'"
+    mycursor.execute(sql % date)
+    json_dict = {}
+
+    # creates JSON dictionary with the single key "active"
+    for i in mycursor.fetchall():
+        json_dict['active'] = int(i[0])
+    return json.dumps(json_dict)
+
   
-  d1 = datetime.date(2020, 3, 22)
-  sql = "select sum(Active) from DailyReport"
-  # print(sql % today.strftime('%Y-%m-%d') )
-  mycursor.execute(sql)
-    
-  result = mycursor.fetchall()
-  # while (today > d1):
-  #     d1_str = d1.strftime('%Y-%m-%d')
-  #     mycursor.execute(sql % (d1))
-  #     temp = mycursor.fetchall()
-  #     for row in temp:
-  #       result.append(row)
-  #     d1 += timedelta(days=1)
-  # total = 0
-  # for i in result:
-  #   total += int(i[0])
-  json_dict = {}
-  json_dict["active"] = int(result[0][0])
-  # print(result[0][0])
-  return json.dumps(json_dict)
-   
-  
-def fun_10(date):
-  sql = "select sum(Active) from DailyReport where Date <= '%s'"
-  print(sql % date)
-  mycursor.execute(sql % date)
-  json_dict = {}
-  for i in mycursor.fetchall():
-    json_dict['active'] = int(i[0])
-  return json.dumps(json_dict)
-  
-def fun_11(state):
+def active_present_state(state):
+    """
+    :param state: a US state (full name), territories, or Grand Princess
+    :return: the total number of active cases in the given
+state on the present date as a JSON dictionary with the single key "active"
+    """
+
+    # sql query statement
     today = datetime.datetime.now(timezone('US/Eastern')).date() - timedelta(days=1)
-    sql = "select sum(Active) from DailyReport where State = '%s'"
-    # death_cumulative = today.strftime('%Y-%m-%d')
-    print(sql %  state)
-    mycursor.execute(sql % state)
+    sql = "select sum(Active) from DailyReport where State = '%s' and Date = '%s'"
+    mycursor.execute(sql % (state, today))
+
+    # creates JSON dictionary with the single key "active"
     json_dict = {}
     for i in mycursor.fetchall():
-      json_dict['active'] = int(i[0])
+        json_dict['active'] = int(i[0])
     return json.dumps(json_dict)
-    
-def fun_12(state, date):
-  sql = "select sum(Active) from DailyReport where state = '%s' and Date <= '%s'"
-  print(sql % (state, date))
-  mycursor.execute(sql % (state, date))
-  json_dict = {}
-  for i in mycursor.fetchall():
-    json_dict['active'] = int(i[0])
-  return json.dumps(json_dict)
-  
-  
-#****************Ajax Functions****************
 
 
-def fun_19(county_fips):
-  sql = "select Deaths, Date from DailyReport where CountyFIPS = '%s'"
-  #print(sql % county_fips)
-  mycursor.execute(sql % (county_fips))
-  data = mycursor.fetchall()
-  dataFx = []
-  for row in data:
-    dataFx.append(list(map(str, row)))
-  result = json.dumps({"Deaths": dataFx})
-  #print(result)
-  return (result)
-  
-  
-  
-def fun_20(county_fips):
-  sql = "select Active, Date from DailyReport where CountyFIPS = '%s'"
-  #print(sql % county_fips)
-  mycursor.execute(sql % (county_fips))
-  data = mycursor.fetchall()
-  dataFx = []
-  for row in data:
-    dataFx.append(list(map(str, row)))
-    print(row[1])
-  result = json.dumps({"Active": dataFx})
-  #print(result)
-  return (result)
-  
-  
-  
-def ajax_death(fips):
-    sql = "select Date, sum(Deaths) from DailyReport where CountyFIPS = '%s' and Date = '%s'" 
-    d1 = datetime.date(2020, 3, 22)
-    today = datetime.datetime.now(timezone('US/Eastern'))
-    # today = date.today() - timedelta(days=1)
-    print(today)
-    
-    result = []
-    while (today.date() > d1):
-        d1_str = d1.strftime('%Y-%m-%d')
-        mycursor.execute(sql % (fips, d1))
-        temp = mycursor.fetchall()
-        for row in temp:
-          result.append(row)
-        d1 += timedelta(days=1)
-    
+def active_cumulative_state_date(state, date):
+    """
+    :param state: a US state (full name), territories, or Grand Princess
+    :param date: formatted YYYYMMDD
+    :return: the total number of active cases in the
+given state on the given date as a JSON dictionary with the single key "active"
+    """
+
+    # sql query statment
+    sql = "select sum(Active) from DailyReport where state = '%s' and Date <= '%s'"
+    mycursor.execute(sql % (state, date))
+
+    # creates JSON dictionary with the single key "active"
     json_dict = {}
-    for i in result:
-      # print(i[1])
-      json_dict[i[0].strftime('%m-%d-%Y')] = int(i[1])
-    # print(json_dict)
+    for i in mycursor.fetchall():
+        json_dict['active'] = int(i[0])
     return json.dumps(json_dict)
   
   
-  
-  
-    
-  # print(today)
-  
+# ****************AJAX Functions****************
 
-# *************function calls************
 
-# ajax_death(45083)
-#death_cumulative()
-#death_cumulative_date('2020-04-17')
-#deaths_single_day('2020-04-17')
-#deaths_cumulative_state('New York')
-#deaths_cumulative_state_date('New York', '2020-04-02')
-#deaths_single_day_state_date('New York', '2020-04-02')
-#capacity_state('CT')
-#fun_7("Georgia")
-#fun_8(36061, '2020-05-05')
-#hospitals_open('CT')
-# fun_9()
-#hospitals_open_fips('1015')
-#beds_open_state('CT')
-#fun_10('2020-04-20')
-#beds_open_fips('1013')
-#fun_11('Georgia')
-#capacity_fips('6073')
-#fun_12('Georgia', '2020-05-05')
-# fun_19('6073')
-#fun_20('6073')
+def ajax_deaths(county_fips):
+    """
+    :param county_fips:  a five-digit Federal Information Processing Standards code
+    which uniquely identified counties in the United States
+    :return: list of number of deaths in the FIPS code
+    up to the present as a JSON dictionary with the single key "deaths"
+    """
+
+    # sql query statements
+    sql = "select Deaths, Date from DailyReport where CountyFIPS = '%s'"
+    mycursor.execute(sql % county_fips)
+
+    # fetch the result from sql command and append to a list
+    data = mycursor.fetchall()
+    dataFx = []
+    for row in data:
+        dataFx.append(list(map(str, row)))
+
+    # creates JSON dictionary with the single key "Deaths"
+    result = json.dumps({"Deaths": dataFx})
+    return result
+  
+  
+def ajax_active(county_fips):
+    """
+    :param county_fips:  a five-digit Federal Information Processing Standards code
+    which uniquely identified counties in the United States
+    :return: list of number of active cases in the FIPS code
+    up to the present as a JSON dictionary with the single key "Active"
+    """
+
+    # sql query statements
+    sql = "select Active, Date from DailyReport where CountyFIPS = '%s'"
+    mycursor.execute(sql % (county_fips))
+
+    # fetch the result from sql command and append to a list
+    data = mycursor.fetchall()
+    dataFx = []
+    for row in data:
+        dataFx.append(list(map(str, row)))
+
+    # creates JSON dictionary with the single key "Active"
+    result = json.dumps({"Active": dataFx})
+    return result
