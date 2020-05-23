@@ -10,95 +10,73 @@
         <p><b>Type the FIPS in the input field below:</b></p>
 
         <form action="">
+            <!--creates a button to call loadAct() with user input-->
             Enter FIPS: <input type="text" id="fips" name="fips">
-            <input type="button" onclick="loadAct(fips.value)" value='Are You Ready?'/>
-            
-            
+            <input type="button" onclick="loadAct(fips.value)" value='Submit?'/>
+
+
         </form>
-            
+
     </div>
 
     <div id="demo">
-        
+
     </div>
+
     <div id="chart" style="height: 300px; width: 100%;"></div>
     <div id="chartCntainer" style="height: 300px; width: 100%;"></div>
-    
-    
-    
+
+
+
 
 </body>
 
 <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 
-<script>    
-   
-    function loadAct( test ) {
-        // var xhttp = new XMLHttpRequest();
-        var url = "/covid19/span/active/" + test;
-        var bed = "/covid19/beds/" + test;
-        
-        // var temp = JSON.parse((this.responseText)).Deaths;
+<script>
+
+    function loadAct( fips ) {
+
+        var url = "/covid19/span/active/" + fips;
+
         $.get(bed, function(data){
         document.getElementById("demo").innerHTML = data ;
         });
-   
-        
+
+        <!--sends a GET request to FLASK-->
         $.get(url, function(data){
 
-            // document.getElementById("demo").innerHTML = data;
+            var josnData = JSON.parse(data).Active;
 
-            var josnData = JSON.parse(data).Active; 
-                       
-            callback (); 
+            callback ();
 
             function callback () {
 
                 var dataPoints = [];
 
-                var chart = new CanvasJS.Chart("chart",{
-                    title:{
-                        text:"Historical Active"
-                    },
-                    axisY:{
-                    stripLines:[
-                      {
-                        // Put total number of open beds here
-                        startValue: 9000,
-                        endValue: 10110,
-                        color: "#8B0000"
-                      }
-                      ],
-                  },
-                    data: [{
-                        type: "line",
-                        // xValueFormatString: "DD MMM",
-                        dataPoints : dataPoints,
-                    }]
-                });
-            
+                <!--Plot points fetched from Flask-->
                 $.each(josnData, function(key, value){
-                    var date = new Date(parseInt(value[1].substring(0,4)), parseInt(value[1].substring(5,7)), parseInt(value[1].substring(8,10)))                  
+                    var date = new Date(parseInt(value[1].substring(0,4)), parseInt(value[1].substring(5,7)), parseInt(value[1].substring(8,10)))
                     dataPoints.push({x: date , y: Number(value[0])});
-                }); 
+                });
 
 
 
                 chart.render();
-                
+
             }
         });
-        
-        var url = "/covid19/span/deaths/" + test;
+
+        var url = "/covid19/span/deaths/" + fips;
 
         $.get(url, function(data){
 
             // document.getElementById("demo").innerHTML = data;
 
-            var josnData = JSON.parse(data).Deaths; 
-                       
-            callback (); 
+            var josnData = JSON.parse(data).Deaths;
+
+            callback ();
 
             function callback () {
 
@@ -114,26 +92,25 @@
                         dataPoints : dataPoints,
                     }]
                 });
-            
+
                 $.each(josnData, function(key, value){
-                    var date = new Date(parseInt(value[1].substring(0,4)), parseInt(value[1].substring(5,7)), parseInt(value[1].substring(8,10)))                  
+                    var date = new Date(parseInt(value[1].substring(0,4)), parseInt(value[1].substring(5,7)), parseInt(value[1].substring(8,10)))
                     dataPoints.push({x: date , y: Number(value[0])});
-                }); 
+                });
 
                 chart.render();
 
             }
         });
-        
-    
+
+
     };
 
 </script>
 
 
-</script>
     <div id="chartCntainer" style="height: 300px; width: 100%;"></div>
     <div id="chart" style="height: 300px; width: 100%;"></div>
-    
-    
+
+
 </html>

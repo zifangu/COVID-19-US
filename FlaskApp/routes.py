@@ -118,6 +118,7 @@ def state_date_case(state, date):
 def ajax():
     return render_template("ajax.html")
 
+
 @app.route('/covid19/span/deaths/<int:county_fips>')
 def span_deaths(county_fips):
     return paths.ajax_deaths(county_fips)
