@@ -37,14 +37,15 @@
 <script>
 
     function loadAct( fips ) {
-
+        // produce the active cases trend chart
+        // set up the request URL
         var url = "/covid19/span/active/" + fips;
 
         $.get(bed, function(data){
         document.getElementById("demo").innerHTML = data ;
         });
 
-        # sends a GET request to FLASK
+        // sends a GET request to FLASK
         $.get(url, function(data){
 
             var josnData = JSON.parse(data).Active;
@@ -55,24 +56,23 @@
 
                 var dataPoints = [];
 
-                <!--Plot points fetched from Flask-->
+                // plot points fetched from Flask
                 $.each(josnData, function(key, value){
                     var date = new Date(parseInt(value[1].substring(0,4)), parseInt(value[1].substring(5,7)), parseInt(value[1].substring(8,10)))
                     dataPoints.push({x: date , y: Number(value[0])});
                 });
 
 
-
+                // render the chart
                 chart.render();
 
             }
         });
 
+        // repeat similar steps to produce the deaths trend chart
         var url = "/covid19/span/deaths/" + fips;
 
         $.get(url, function(data){
-
-            // document.getElementById("demo").innerHTML = data;
 
             var josnData = JSON.parse(data).Deaths;
 
